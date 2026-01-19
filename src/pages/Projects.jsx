@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, ArrowRight, ExternalLink, Clock, Code } from 'lucide-react';
+import { Search, ArrowRight, ExternalLink, Clock, Code, LayoutGrid, List } from 'lucide-react';
 import { projects } from '../data/projects';
 import { currentProjects } from '../data/currentProjects';
 import { skills } from '../data/skills';
@@ -9,6 +9,7 @@ import PageTransition from '../components/PageTransition';
 
 const Projects = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
   const location = useLocation();
 
   // If arriving from Skills page with a ?skill= query, use it to filter projects
@@ -115,7 +116,7 @@ const Projects = () => {
                       <p className="text-gray-700 dark:text-gray-300 mb-4 text-sm">
                         {project.description}
                       </p>
-                      
+
                       {/* Progress Bar */}
                       <div className="mb-4">
                         <div className="flex items-center justify-between mb-2">
@@ -170,45 +171,72 @@ const Projects = () => {
             </motion.div>
           )}
 
-          {/* Search Bar */}
+          {/* Controls: Search Bar + View Toggle */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-12 max-w-2xl mx-auto"
+            className="mb-12 flex flex-col md:flex-row gap-4 justify-between items-center max-w-7xl mx-auto"
           >
-            <div className="relative">
+            {/* Search Bar - Expanded width */}
+            <div className="relative w-full md:max-w-xl">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search by name, tech stack, or domain..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-gray-900 dark:text-gray-100"
+                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-gray-900 dark:text-gray-100"
               />
             </div>
-            {searchQuery && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center"
+
+            {/* View Toggle */}
+            <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-md transition-all ${viewMode === 'grid'
+                  ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                  }`}
+                title="Grid View"
               >
-                Found {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}
-              </motion.p>
-            )}
+                <LayoutGrid className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-md transition-all ${viewMode === 'list'
+                  ? 'bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                  }`}
+                title="List View"
+              >
+                <List className="w-5 h-5" />
+              </button>
+            </div>
           </motion.div>
+
+          {/* Search Results Count */}
+          {searchQuery && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mb-8 text-sm text-gray-600 dark:text-gray-400 text-center"
+            >
+              Found {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}
+            </motion.p>
+          )}
 
           {/* Matching skills preview */}
           {matchingSkills.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8 max-w-2xl mx-auto"
+              className="mb-8 max-w-2xl mx-auto text-center"
             >
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Related skills
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
                 {matchingSkills.map((name) => (
                   <span
                     key={name}
@@ -221,64 +249,75 @@ const Projects = () => {
             </motion.div>
           )}
 
-          {/* Projects Grid */}
+          {/* Projects Container */}
           {filteredProjects.length > 0 ? (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              layout
+              className={`grid gap-6 ${viewMode === 'grid'
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                : 'grid-cols-1 max-w-4xl mx-auto'
+                }`}
             >
               {filteredProjects.map((project, index) => (
                 <motion.div
+                  layout
                   key={project.id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: index * 0.05 }}
                   whileHover={{ y: -5 }}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-gray-700 overflow-hidden"
+                  className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col h-full`}
                 >
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wide">
-                          {project.type}
-                        </span>
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white mt-2">
-                          {project.title}
-                        </h3>
+                  <div className={`p-6 flex flex-col h-full ${viewMode === 'list' ? 'md:flex-row md:items-start md:gap-6' : ''}`}>
+
+                    {/* Content Container */}
+                    <div className="flex flex-col flex-grow">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wide">
+                            {project.type}
+                          </span>
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white mt-2">
+                            {project.title}
+                          </h3>
+                        </div>
+                      </div>
+
+                      <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3 flex-grow">
+                        {project.shortDescription}
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {project.techStack.slice(0, viewMode === 'list' ? 6 : 3).map((tech) => (
+                          <span
+                            key={tech}
+                            className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                        {project.techStack.length > (viewMode === 'list' ? 6 : 3) && (
+                          <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                            +{project.techStack.length - (viewMode === 'list' ? 6 : 3)}
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
-                      {project.shortDescription}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.techStack.slice(0, 3).map((tech) => (
-                        <span
-                          key={tech}
-                          className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                    {/* Action Button - Pushed to bottom in grid, side in list */}
+                    <div className={`${viewMode === 'list' ? 'mt-4 md:mt-0 md:self-center md:flex-shrink-0' : 'mt-auto'}`}>
+                      <Link to={`/projects/${project.slug}`} className={viewMode === 'list' ? 'block w-full md:w-auto' : ''}>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className={`flex items-center justify-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors ${viewMode === 'list' ? 'w-full md:w-auto whitespace-nowrap' : 'w-full'}`}
                         >
-                          {tech}
-                        </span>
-                      ))}
-                      {project.techStack.length > 3 && (
-                        <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
-                          +{project.techStack.length - 3}
-                        </span>
-                      )}
+                          <span>View Details</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </motion.button>
+                      </Link>
                     </div>
 
-                    <Link to={`/projects/${project.slug}`}>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
-                      >
-                        <span>View Details</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </motion.button>
-                    </Link>
                   </div>
                 </motion.div>
               ))}
