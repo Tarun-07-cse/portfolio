@@ -3,6 +3,7 @@ import { motion, useInView } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
+import HeroMarquee from '../components/HeroMarquee';
 
 export default function Home() {
   const containerRef = useRef(null);
@@ -12,9 +13,8 @@ export default function Home() {
   return (
     <div ref={containerRef} className="bg-white text-black selection:bg-black selection:text-white">
       <HeroSection />
-
       {/* Circular navigation buttons after education hero */}
-      <section className="py-24 md:py-28 px-6 md:px-12 bg-white text-black">
+      <section className="py-24 md:py-28 px-6 md:px-12 bg-gradient-to-b from-white via-neutral-50/80 to-neutral-100 text-black">
         <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-12 md:gap-20 items-center">
           <div className="space-y-5">
             <p className="text-xs font-mono uppercase tracking-[0.3em] text-black/50">
@@ -84,70 +84,76 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER CTA - unchanged */}
-      <section ref={footerRef} className="py-40 px-6 md:px-12 bg-black text-white">
-        <div className="max-w-[1920px] mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={footerInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24"
-          >
-            <div>
-              <h3 className="text-sm font-mono text-gray-500 mb-8 uppercase tracking-widest">Services</h3>
-              <ul className="space-y-4 text-2xl font-light text-gray-300">
-                {['Visual Identities', 'Product Design', 'Webflow / Development', 'Creative Direction'].map((item, i) => (
-                  <motion.li
-                    key={item}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={footerInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.1 * i, duration: 0.5 }}
-                    className="hover:text-white transition-colors"
-                  >
-                    {item}
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-mono text-gray-500 mb-8 uppercase tracking-widest">Connect</h3>
-              <div className="flex flex-col gap-4 text-xl">
-                <motion.a
-                  href="mailto:tarun.anand2127@gmail.com"
-                  className="hover:text-white transition-colors text-gray-400"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={footerInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                >
-                  tarun.anand2127@gmail.com
-                </motion.a>
-                <div className="flex gap-6 mt-4">
-                  <a href="https://www.linkedin.com/in/tarun-anand-b12bb7329/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors text-gray-400" data-cursor="view">LinkedIn</a>
-                  <a href="#" className="hover:text-white transition-colors text-gray-400" data-cursor="view">Instagram</a>
-                  <a href="https://github.com/Tarun-07-cse" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors text-gray-400" data-cursor="view">Github</a>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+      {/* Scrolling mantra strip below circular navigation */}
+      <HeroMarquee />
 
+      {/* FOOTER CTA (simplified, connect only) */}
+      <section ref={footerRef} className="py-32 px-6 md:px-12 bg-black text-white">
+        <div className="max-w-[1920px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={footerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.15 }}
-            className="border-t border-white/20 pt-20"
+            className="border-t border-white/15 pt-16 flex flex-col md:flex-row md:items-end md:justify-between gap-10"
           >
-            <h2 className="text-[8vw] leading-[0.8] font-display font-bold tracking-tighter text-white mb-8">
-              ALWAYS KEEN <br /> FOR EXCITING <br /> <span className="text-gray-600">COLLAB.</span>
-            </h2>
-            <Link to="/contact" data-cursor="explore">
-              <motion.div
-                whileHover={{ x: 10 }}
-                className="inline-flex items-center gap-4 text-2xl md:text-3xl mt-8 cursor-pointer group"
+            <div>
+              <h2 className="text-[8vw] leading-[0.8] font-display font-bold tracking-tighter text-white mb-4">
+                ALWAYS KEEN <br /> FOR EXCITING <br /> <span className="text-gray-600">COLLAB.</span>
+              </h2>
+              <p className="text-sm md:text-base text-white/50 max-w-md mt-4">
+                Whether it&apos;s a product build, a visual system, or something experimental, I&apos;m
+                always open to meaningful collaborations.
+              </p>
+              <Link to="/contact" data-cursor="explore">
+                <motion.div
+                  whileHover={{ x: 6 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="inline-flex items-center gap-3 mt-6 px-6 py-3 rounded-full border border-white/30 hover:border-white bg-white/5 hover:bg-white/10 text-sm md:text-base font-medium cursor-pointer group"
+                >
+                  <span>Start a project</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </motion.div>
+              </Link>
+            </div>
+
+            <div className="space-y-4 md:text-right">
+              <p className="text-xs font-mono uppercase tracking-[0.3em] text-white/40">
+                Connect
+              </p>
+              <a
+                href="mailto:tarun.anand2127@gmail.com"
+                className="block text-lg md:text-xl text-white hover:text-white/80 transition-colors"
               >
-                <span className="border-b border-white/30 group-hover:border-white transition-colors">Start a Project</span>
-                <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-              </motion.div>
-            </Link>
+                tarun.anand2127@gmail.com
+              </a>
+              <div className="flex md:justify-end gap-6 text-sm text-white/60">
+                <a
+                  href="https://www.linkedin.com/in/tarun-anand-b12bb7329/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                  data-cursor="view"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href="#"
+                  className="hover:text-white transition-colors"
+                  data-cursor="view"
+                >
+                  Instagram
+                </a>
+                <a
+                  href="https://github.com/Tarun-07-cse"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                  data-cursor="view"
+                >
+                  Github
+                </a>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
