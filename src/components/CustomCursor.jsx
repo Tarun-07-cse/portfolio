@@ -5,6 +5,7 @@ const MAGNETIC_STRENGTH = 0.2;
 const MAGNETIC_RADIUS = 80;
 
 export default function CustomCursor() {
+  const [enabled, setEnabled] = useState(false);
   const [cursorVariant, setCursorVariant] = useState('default'); // 'default' | 'view' | 'explore' | 'button'
   const hoverTargetRef = useRef(null);
 
@@ -17,7 +18,24 @@ export default function CustomCursor() {
   const circleXSpring = useSpring(circleX, springConfig);
   const circleYSpring = useSpring(circleY, springConfig);
 
+  // Only enable the custom cursor on devices with a precise pointer (desktop)
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') return;
+
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setEnabled(mq.matches);
+
+    update();
+    mq.addEventListener ? mq.addEventListener('change', update) : mq.addListener(update);
+
+    return () => {
+      mq.removeEventListener ? mq.removeEventListener('change', update) : mq.removeListener(update);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
+
     const moveCursor = (e) => {
       dotX.set(e.clientX);
       dotY.set(e.clientY);
@@ -87,12 +105,17 @@ export default function CustomCursor() {
       window.removeEventListener('mouseover', handleMouseOver);
       document.documentElement.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [cursorVariant, dotX, dotY, circleX, circleY]);
+  }, [enabled, cursorVariant, dotX, dotY, circleX, circleY]);
 
   const isHovered = cursorVariant !== 'default';
   const cursorLabel =
     cursorVariant === 'explore' ? 'Explore' : cursorVariant === 'view' ? 'View' : null;
   const circleSize = cursorVariant === 'explore' || cursorVariant === 'view' ? 72 : isHovered ? 48 : 32;
+
+  // On touch devices / non-precise pointers, render nothing
+  if (!enabled) {
+    return null;
+  }
 
   return (
     <>

@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ReactLenis } from 'lenis/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Navbar from './components/Navbar';
-import LoadingScreen from './components/LoadingScreen';
 import CustomCursor from './components/CustomCursor';
 import Home from './pages/Home';
 import Projects from './pages/Projects';
@@ -31,8 +30,6 @@ function AppRoutes() {
 }
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-
   // Keep GSAP ScrollTrigger in sync with Lenis/resize
   useEffect(() => {
     const refresh = () => ScrollTrigger.refresh();
@@ -43,29 +40,23 @@ function App() {
   return (
     <ReactLenis root>
       <Router>
-        <div className="App min-h-screen bg-background relative overflow-x-hidden selection:bg-white selection:text-black cursor-none">
+        <div className="App min-h-screen bg-background relative overflow-x-hidden selection:bg-white selection:text-black">
           <CustomCursor />
 
           {/* Global Grain Overlay */}
           <div className="fixed inset-0 pointer-events-none opacity-20 z-[0] bg-grain mix-blend-overlay"></div>
 
-          <AnimatePresence mode="wait">
-            {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
-          </AnimatePresence>
-
-          {!isLoading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} // Updated easing for smoother feel
-              className="relative z-10"
-            >
-              <Navbar />
-              <main>
-                <AppRoutes />
-              </main>
-            </motion.div>
-          )}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} // Updated easing for smoother feel
+            className="relative z-10"
+          >
+            <Navbar />
+            <main>
+              <AppRoutes />
+            </main>
+          </motion.div>
         </div>
       </Router>
     </ReactLenis>

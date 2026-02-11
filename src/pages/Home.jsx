@@ -3,7 +3,6 @@ import { motion, useInView } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
-import DialNavigator from '../components/DialNavigator';
 
 export default function Home() {
   const containerRef = useRef(null);
@@ -14,8 +13,76 @@ export default function Home() {
     <div ref={containerRef} className="bg-white text-black selection:bg-black selection:text-white">
       <HeroSection />
 
-      {/* Dial-style navigation after education hero */}
-      <DialNavigator />
+      {/* Circular navigation buttons after education hero */}
+      <section className="py-24 md:py-28 px-6 md:px-12 bg-white text-black">
+        <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] gap-12 md:gap-20 items-center">
+          <div className="space-y-5">
+            <p className="text-xs font-mono uppercase tracking-[0.3em] text-black/50">
+              After Education
+            </p>
+            <h2 className="text-3xl md:text-5xl font-display font-bold tracking-tight">
+              Choose where to go <span className="text-black/50">next.</span>
+            </h2>
+            <p className="text-base md:text-lg text-black/60 max-w-xl">
+              Tap a circular button to move into detailed views of my projects, skills, or
+              certifications. Optimised for touch on phones and smooth interactions on desktop.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 place-items-center">
+            {[
+              {
+                label: 'Projects',
+                sub: 'Case studies & builds',
+                path: '/projects',
+              },
+              {
+                label: 'Skills',
+                sub: 'Tooling & stack',
+                path: '/skills',
+              },
+              {
+                label: 'Certifications',
+                sub: 'Credentials & wins',
+                path: '/certifications',
+              },
+            ].map((item, index) => (
+              <Link key={item.path} to={item.path} className="w-full flex justify-center" data-cursor="explore">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 0.1 * index,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="relative w-36 h-36 md:w-40 md:h-40 rounded-full border border-black/10 bg-gradient-to-b from-white to-neutral-100 shadow-[0_24px_60px_rgba(0,0,0,0.08)] flex flex-col items-center justify-center text-center px-4"
+                >
+                  {/* circular accent */}
+                  <div className="absolute inset-0 rounded-full pointer-events-none">
+                    <motion.div
+                      className="absolute inset-[18%] rounded-full border border-black/5"
+                      animate={{ scale: [1, 1.05, 1], opacity: [0.4, 0.7, 0.4] }}
+                      transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+                    />
+                  </div>
+
+                  <span className="text-xs font-mono uppercase tracking-[0.25em] text-black/50 mb-1">
+                    {item.label.charAt(0)}
+                  </span>
+                  <span className="text-sm md:text-base font-semibold">{item.label}</span>
+                  <span className="text-[11px] md:text-xs text-black/50 mt-1">
+                    {item.sub}
+                  </span>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* FOOTER CTA - unchanged */}
       <section ref={footerRef} className="py-40 px-6 md:px-12 bg-black text-white">

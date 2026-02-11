@@ -23,6 +23,11 @@ const Navbar = () => {
     { path: '/contact', label: 'Contact' },
   ];
 
+  // Hide navbar entirely on the home page
+  if (location.pathname === '/') {
+    return null;
+  }
+
   return (
     <>
       <motion.nav
