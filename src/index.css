@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,8 +6,30 @@
 
 @layer base {
   body {
-    @apply bg-white dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-200;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-background text-primary overflow-x-hidden antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Syne', sans-serif;
+  }
+
+  /* Hide default cursor only on non-touch devices ideally, but for now global */
+  @media (hover: hover) and (pointer: fine) {
+    body {
+      cursor: none;
+    }
+
+    a,
+    button,
+    [role="button"] {
+      cursor: none;
+    }
   }
 }
 
@@ -17,47 +39,344 @@
   }
 }
 
-@keyframes scan {
-  from {
-    transform: translateY(-50%);
-  }
-
-  to {
-    transform: translateY(50%);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-
-/* Smooth scrolling */
+/* Hide scrollbar + prevent horizontal scrollbar globally */
 html {
-  scroll-behavior: smooth;
-  overflow-y: scroll;
-  /* Prevent scrollbar shift */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overflow-x: hidden;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+body {
+  overflow-x: hidden;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
+/* ----- Hero section: pinned cinematic horizontal scroll ----- */
+.hero-section {
+  position: relative;
 }
 
-::-webkit-scrollbar-track {
-  @apply bg-gray-100 dark:bg-gray-800;
+.hero-wrapper {
+  height: 100vh;
+  position: relative;
+  background-color: #ffffff;
+  transition: background-color 0.5s ease;
+  overflow: hidden;
 }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+.hero-wrapper.dark-mode {
+  background-color: #000000;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400 dark:bg-gray-500;
+.hero-container {
+  display: flex;
+  /* 2 horizontal panels */
+  width: 200vw;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.hero-wrapper .panel {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+}
+
+.hero-wrapper .hero-left {
+  background-color: transparent;
+}
+
+.hero-wrapper .hero-right {
+  background-color: transparent;
+}
+
+.hero-wrapper .hero-right-image {
+  position: relative;
+  will-change: opacity, transform;
+  /* Let the glow bleed outside the card */
+  overflow: visible;
+  z-index: 0;
+}
+
+/* Subtle inverted glow for the LIGHT image panel (slightly darker, cooler light) */
+.hero-panel-intro .hero-right-image::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(20, 20, 30, 0.75), transparent 65%),
+    radial-gradient(circle at 80% 100%, rgba(35, 35, 55, 0.65), transparent 70%);
+  opacity: 1;
+  filter: blur(55px);
+  mix-blend-mode: multiply;
+  z-index: -1;
+}
+
+/* Brighter halo for the DARK image panel (light glow against black) */
+.hero-panel-qual .hero-right-image::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.9), transparent 60%),
+    radial-gradient(circle at 80% 90%, rgba(190, 190, 230, 0.75), transparent 70%),
+    radial-gradient(circle at 50% 100%, rgba(140, 140, 190, 0.5), transparent 75%);
+  opacity: 0.95;
+  filter: blur(50px);
+  /* Sit behind the image but above the dark panel */
+  z-index: -1;
+}
+
+/* Dark mode: invert hero text and UI (smooth 0.5s) */
+.hero-section .hero-text {
+  transition: color 0.5s ease;
+}
+
+.hero-section.dark-mode .hero-content .hero-text {
+  color: #ffffff;
+}
+
+.hero-section.dark-mode .hero-content span.hero-text:first-child {
+  color: #ffffff;
+  opacity: 0.7;
+}
+
+.hero-section.dark-mode .hero-content p.hero-text {
+  color: #ffffff;
+  opacity: 0.9;
+}
+
+.hero-section.dark-mode .hero-content a.hero-text {
+  color: #ffffff;
+}
+
+.hero-section.dark-mode .hero-cta {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.hero-section.dark-mode .hero-cta:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+/* ----- Premium horizontal portfolio (full-page) ----- */
+.horizontal-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.horizontal-pinned {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.horizontal-container {
+  display: flex;
+  flex-wrap: nowrap;
+  height: 100%;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.horizontal-panel {
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Lenis Recommended CSS */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* ----- Horizontal scroll section (white bg + scroll inversion) ----- */
+.horizontal-scroll-section {
+  isolation: isolate;
+  --scroll-p: 0;
+  --scroll-p-inv: 0;
+  min-height: 100vh;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Left line - height grows with scroll progress, color inverts */
+.horizontal-scroll-line {
+  height: calc(var(--scroll-p, 0) * 100%);
+  width: 2px;
+  background: color-mix(in srgb, #000 calc((1 - var(--scroll-p-inv, 0)) * 100%), #fff);
+  transition: height 0.08s ease-out, background 0.08s ease-out;
+}
+
+.horizontal-track {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Sticky area: inversion immediately (uses --scroll-p-inv, ramps in first 50% scroll) */
+.sticky-inner {
+  --scroll-p: 0;
+  --scroll-p-inv: 0;
+  background: color-mix(in srgb, #fff calc((1 - var(--scroll-p-inv, 0)) * 100%), #0a0a0a);
+  transition: background 0.08s ease-out;
+}
+
+/* Panel text and UI: invert early via --scroll-p-inv */
+.horizontal-panel-title,
+.horizontal-panel-subtitle,
+.horizontal-panel-desc,
+.horizontal-panel-email,
+.horizontal-panel-cta {
+  color: color-mix(in srgb, #000 calc((1 - var(--scroll-p-inv, 0)) * 100%), #fff);
+}
+
+.horizontal-panel-subtitle {
+  opacity: calc(0.4 + 0.2 * var(--scroll-p-inv, 0));
+}
+
+.horizontal-panel-desc {
+  opacity: calc(0.6 + 0.1 * var(--scroll-p-inv, 0));
+}
+
+.horizontal-panel-email {
+  opacity: calc(0.7 + 0.15 * var(--scroll-p-inv, 0));
+}
+
+.horizontal-panel-cta {
+  border-color: color-mix(in srgb, rgba(0,0,0,0.2) calc((1 - var(--scroll-p-inv, 0)) * 100%), rgba(255,255,255,0.25));
+  color: color-mix(in srgb, #000 calc((1 - var(--scroll-p-inv, 0)) * 100%), #fff);
+}
+
+.horizontal-panel-cta:hover {
+  border-color: color-mix(in srgb, rgba(0,0,0,0.4) calc((1 - var(--scroll-p-inv, 0)) * 100%), rgba(255,255,255,0.5));
+  background: color-mix(in srgb, rgba(0,0,0,0.04) calc((1 - var(--scroll-p-inv, 0)) * 100%), rgba(255,255,255,0.08));
+}
+
+/* Panel bg: invert early */
+.horizontal-panel-bg {
+  background: color-mix(in srgb, #fafafa calc((1 - var(--scroll-p-inv, 0)) * 100%), #0a0a0a);
+}
+
+/* Left-side text: inversion effect as you scroll (color inverts via --scroll-p above) */
+.horizontal-panel-left {
+  isolation: isolate;
+}
+
+/* Mockup border inverts early */
+.horizontal-panel-mockup {
+  border-color: color-mix(in srgb, rgba(0,0,0,0.1) calc((1 - var(--scroll-p-inv, 0)) * 100%), rgba(255,255,255,0.1));
+  background: color-mix(in srgb, #f0f0f0 calc((1 - var(--scroll-p-inv, 0)) * 100%), rgba(255,255,255,0.05));
+}
+
+/* Edge fades - light theme (white) */
+.horizontal-edge-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12vw;
+  max-width: 180px;
+  pointer-events: none;
+  z-index: 15;
+  background: linear-gradient(to right, transparent, transparent 20%, rgba(10, 10, 10, 0.6) 70%, #0a0a0a);
+}
+
+.horizontal-edge-fade--light {
+  background: linear-gradient(to right, transparent, transparent 20%, rgba(255, 255, 255, 0.8) 70%, #fff);
+}
+
+.horizontal-edge-fade.right {
+  left: auto;
+  right: 0;
+  background: linear-gradient(to left, transparent, transparent 20%, rgba(10, 10, 10, 0.6) 70%, #0a0a0a);
+}
+
+.horizontal-edge-fade--light.right {
+  background: linear-gradient(to left, transparent, transparent 20%, rgba(255, 255, 255, 0.8) 70%, #fff);
+}
+
+/* When section is inverted (dark), edge fades go dark */
+.horizontal-scroll-section.inverted .horizontal-edge-fade--light {
+  background: linear-gradient(to right, transparent, transparent 20%, rgba(10, 10, 10, 0.7) 70%, #0a0a0a);
+}
+
+.horizontal-scroll-section.inverted .horizontal-edge-fade--light.right {
+  background: linear-gradient(to left, transparent, transparent 20%, rgba(10, 10, 10, 0.7) 70%, #0a0a0a);
+}
+
+/* Device mockup: subtle 3D tilt, shadow, hover */
+.device-mockup-wrap {
+  will-change: transform;
+  transform-style: preserve-3d;
+  transform: perspective(1200px) rotateY(-2deg) rotateX(2deg);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.6s ease;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.device-mockup-wrap:hover {
+  transform: perspective(1200px) rotateY(-3deg) rotateX(3deg) scale(1.02);
+  box-shadow:
+    0 35px 60px -15px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.device-mockup-img {
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Table + laptop: black and white effect */
+.horizontal-panel-img-bw {
+  filter: grayscale(1) contrast(1.08) brightness(0.92);
+  transition: filter 0.6s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.device-mockup-wrap:hover .horizontal-panel-img-bw {
+  filter: grayscale(0.85) contrast(1.05) brightness(0.95);
+}
+
+.device-mockup-wrap:hover .device-mockup-img {
+  transform: scale(1.05);
+}
+
+/* CTA button in horizontal section: lift + arrow */
+.horizontal-panel a[href] span.inline-flex {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease, background-color 0.35s ease;
+}
+
+.horizontal-panel a[href]:hover span.inline-flex {
+  transform: translateY(-2px);
 }

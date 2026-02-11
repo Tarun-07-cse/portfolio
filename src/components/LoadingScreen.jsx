@@ -75,14 +75,16 @@ const LoadingScreen = ({ onComplete }) => {
         }));
         setSkillPositions(initialPositions);
 
+        // Speed up word cycling
         const interval = setInterval(() => {
             setWordIndex(prev => prev + 1);
-        }, 1200);
+        }, 800); // Faster cycling (was 1200)
         return () => clearInterval(interval);
     }, [allSkills]);
 
     useEffect(() => {
-        const calculatedDuration = Math.max(uniqueProjectCount * 1200, 3000);
+        // FIXED DURATION: 2 seconds max
+        const calculatedDuration = 2000;
         const totalSteps = calculatedDuration / 30;
         const increment = 100 / totalSteps;
 
@@ -96,13 +98,14 @@ const LoadingScreen = ({ onComplete }) => {
             });
         }, 30);
         return () => clearInterval(progressInterval);
-    }, [uniqueProjectCount]);
+    }, []); // Removed dependency on uniqueProjectCount
 
     useEffect(() => {
         if (count === 100) {
+            // Quick exit after 100%
             const timer = setTimeout(() => {
                 onComplete();
-            }, 800);
+            }, 300); // Faster exit (was 800)
             return () => clearTimeout(timer);
         }
     }, [count, onComplete]);
